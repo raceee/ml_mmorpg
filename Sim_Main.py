@@ -1,7 +1,6 @@
 import random
 import math
 
-
 class Boss:
     def __init__(self, bs_name, bs_health, boss_attack, armour, attack_vector, defense_vector):
         self.boss_name = bs_name
@@ -10,19 +9,19 @@ class Boss:
         self.boss_armour = armour
         self.initial_boss_defense_vector = attack_vector
         self.initial_boss_offense_vector = defense_vector
-
+    
     def boss_attack(self):
         return
-
+    
     def get_bs_health(self):
         return self.bs_health
 
     def bs_loose_health(self, damage):
-        self.bs_health -= damage  # fantastic code tripp
-
+        self.bs_health -= damage #fantastic code tripp
+    
     def vector_set(self):
         return
-
+    
     def boss_optimize(self, dataframe):
         pass
 
@@ -35,40 +34,44 @@ class Player:
         self.player_armour = pl_armour
         self.initial_player_defense_vector = attack_vector
         self.initial_player_offense_vector = defense_vector
-
+    
     def set_player_attack(self):
-        l2 = math.sqrt(sum([stat ** 2 for stat in self.initial_player_offense_vector]))
+        l2 = math.sqrt(sum([stat**2 for stat in self.initial_player_offense_vector]))
         self.attack_vector = [power / l2 for power in self.initial_player_offense_vector]
-
+    
     def set_player_defense(self):
-        l2 = math.sqrt(sum([stat ** 2 for stat in self.initial_player_defense_vector]))
+        l2 = math.sqrt(sum([stat**2 for stat in self.initial_player_defense_vector]))
         self.defense_vector = [power / l2 for power in self.initial_player_defense_vector]
-
+    
     def player_attack(self):
         return self.player_attack * self.attack_vector
-
+    
     def player_defend(self):
         return self.player_armour * self.defense_vector
-
+    
     def take_damage(self, damage):
         self.player_health -= damage
 
 
 class Raid:
-    def __init__(self, boss, players: list):
+    def __init__(self, boss, players:list):
         self.boss = boss
         self.player_list = players
         self.party_size = len(players)
         self.player_party_total_health = sum([player.player_health for player in self.player_list])
 
+
     def make_fight(self):
         boss_damage_tape = []
         while self.player_party_total_health > 0:
-            self.player_party_total_health -= abs(self.boss.boss_attack() - self.player.player_defend())   # block needs to be added here
+            self.player_party_total_health -= abs(self.boss.boss_attack() - self.player.player_defend())# block needs to be added here
             boss_damage_tape.append(self.player_party_total_health)
         player_damage_tape = []
         while self.boss.boss_health > 0:
-            self.boss.boss_health -= sum([abs(player.player_attack() - self.boss.boss_armour) for player in self.player_list])  # block needs to be added here
+            self.boss.boss_health -= sum([abs(player.player_attack() - self.boss.boss_armour()) for player in self.player_list]) # block needs to be added here
+
+
+
 
 #     def __str__(self):
 #         class_info = """
@@ -123,6 +126,10 @@ class Raid:
 
 #     def pl_get_name(self):
 #         return self.pl_name
+
+
+
+        
 
 
 # def menu():
@@ -227,3 +234,7 @@ class Raid:
 #             print(f"Turn {turn_counter}")
 
 #     print(f"Congratulations you have defeated {boss.bs_get_name()}!")
+
+
+
+

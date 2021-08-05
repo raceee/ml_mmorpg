@@ -1,3 +1,4 @@
+import numpy as np
 import random
 import math
 
@@ -60,15 +61,20 @@ class Raid:
         self.party_size = len(players)
         self.player_party_total_health = sum([player.player_health for player in self.player_list])
 
+    def fight(self):
+        player_vector = np.add([player.player_attack() for player in self.player_list], axis=0)
+
 
     def make_fight(self):
         boss_damage_tape = []
         while self.player_party_total_health > 0:
-            self.player_party_total_health -= abs(self.boss.boss_attack() - self.player.player_defend())# block needs to be added here
+            self.player_party_total_health -= abs(self.boss.boss_attack() - self.player.player_defend()) # block needs to be added here
             boss_damage_tape.append(self.player_party_total_health)
         player_damage_tape = []
         while self.boss.boss_health > 0:
             self.boss.boss_health -= sum([abs(player.player_attack() - self.boss.boss_armour()) for player in self.player_list]) # block needs to be added here
+
+
 
 
 

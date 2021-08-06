@@ -11,14 +11,25 @@ class Boss:
         self.initial_boss_defense_vector = attack_vector
         self.initial_boss_offense_vector = defense_vector
     
+    def set_boss_attack(self):
+        l2 = math.sqrt(sum([stat**2 for stat in self.initial_boss_offense_vector]))
+        self.attack_vector = [power / l2 for power in self.initial_boss_offense_vector]
+    
+    def set_boss_defense(self):
+        l2 = math.sqrt(sum([stat**2 for stat in self.initial_boss_defense_vector]))
+        self.defense_vector = [power / l2 for power in self.initial_boss_defense_vector]
+
     def boss_attack(self):
-        return
+        return self.player_attack * self.attack_vector
+    
+    def boss_defend(self):
+        return self.boss_armour * self.defense_vector
     
     def get_bs_health(self):
         return self.bs_health
 
     def bs_loose_health(self, damage):
-        self.bs_health -= damage #fantastic code tripp
+        self.boss_health -= damage #fantastic code tripp
     
     def vector_set(self):
         return
@@ -35,7 +46,8 @@ class Player:
         self.player_armour = pl_armour
         self.initial_player_defense_vector = attack_vector
         self.initial_player_offense_vector = defense_vector
-    
+        self.is_dead = False
+
     def set_player_attack(self):
         l2 = math.sqrt(sum([stat**2 for stat in self.initial_player_offense_vector]))
         self.attack_vector = [power / l2 for power in self.initial_player_offense_vector]
@@ -45,9 +57,13 @@ class Player:
         self.defense_vector = [power / l2 for power in self.initial_player_defense_vector]
     
     def player_attack(self):
+        if self.is_dead:
+            return 0
         return self.player_attack * self.attack_vector
     
     def player_defend(self):
+        if self.is_dead:
+            return 0
         return self.player_armour * self.defense_vector
     
     def take_damage(self, damage):
@@ -61,9 +77,30 @@ class Raid:
         self.party_size = len(players)
         self.player_party_total_health = sum([player.player_health for player in self.player_list])
 
-    def fight(self):
-        player_vector = np.add([player.player_attack() for player in self.player_list], axis=0)
-
+    def fight(self, who=None):
+        raid_attack_vector = np.add([player.player_attack() for player in self.player_list], axis=0)
+        boss_health_tape = []
+        for p_attack, b_armour in zip(raid_attack_vector, self.boss.boss_defend()):
+            if p_attack > b_armour:
+                if self.boss.boss_health <= 0:
+                    print("Boss has Died")
+                    break
+                self.boss.bs_loose_health(p_attack-b_armour)
+                boss_health_tape.append(self.boss.boss_health)
+            else:
+                boss_health_tape.append(self.boss.boss_health)
+        
+        raid_health_tape = []
+        for player in self.player_list:
+            for p_defense, b_attack in zip(player.player_defend(), self.boss.boss_attack()):
+                if b_attack > p_defense:
+                    """
+                    # TODO: here i am iterating through the list of players and damaging each one, 
+                    # for simplicity i want the damage to one player to deduct out of 
+                    # the total pool of health of the whole raid instead of just out of the player.
+                    # That way I can just report that the raid has died.
+                    """
+                    player.take_damage(b_attack - p_defense)
 
     def make_fight(self):
         boss_damage_tape = []

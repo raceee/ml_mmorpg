@@ -132,8 +132,4 @@ if __name__ == "__main__":
     non_meta_defense_vectors = [np.random.rand(1,3) for _ in range(120)]
     non_meta_raids = [Raid(sire_denathrius, raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(non_meta_attack_vectors, non_meta_defense_vectors)]
     all_raids = meta_raids + non_meta_raids
-    print(len(all_raids))
-    vissy = vis_encounters(all_raids)
-    # TODO: figure out vis
-
-
+    vis_encounters(all_raids)

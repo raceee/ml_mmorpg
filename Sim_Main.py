@@ -1,6 +1,7 @@
 import numpy as np
 import random
 import math
+import matplotlib.pyplot as plt
 
 class Boss:
     def __init__(self, bs_name, bs_health, boss_attack, armour, attack_vector, defense_vector):
@@ -39,6 +40,10 @@ class Boss:
 
 
 class Player:
+    """
+    Deprecated too much work, but useful to have for future testing
+    Replaced with Raid for short term use
+    """
     def __init__(self, pl_name, pl_health, pl_attack, pl_armour, attack_vector, defense_vector):
         self.player_name = pl_name
         self.player_health = pl_health
@@ -71,213 +76,62 @@ class Player:
 
 
 class Raid:
-    def __init__(self, boss, players:list):
+    def __init__(self, boss, raid_health, raid_attack, raid_defense):
         self.boss = boss
-        self.player_list = players
-        self.party_size = len(players)
-        self.player_party_total_health = sum([player.player_health for player in self.player_list])
+        self.raid_health = raid_health
+        self.raid_attack = raid_attack
+        self.raid_defense = raid_defense
+        self.set_raid_attack()
+        self.set_raid_defense()
+    
+    def set_raid_attack(self):
+        self.normed_attack_vector = self.raid_attack / np.linalg.norm(self.raid_attack)
+    
+    def set_raid_defense(self):
+        self.normed_defesnse_vector = self.raid_defense / np.linalg.norm(self.raid_defense)
+    
+    # @property
+    def get_raid_attack(self):
+        return self.normed_attack_vector
+    
+    @property
+    def get_raid_defense(self):
+        return self.normed_defesnse_vector
 
-    def fight(self, who=None):
-        raid_attack_vector = np.add([player.player_attack() for player in self.player_list], axis=0)
-        boss_health_tape = []
-        for p_attack, b_armour in zip(raid_attack_vector, self.boss.boss_defend()):
-            if p_attack > b_armour:
-                if self.boss.boss_health <= 0:
-                    print("Boss has Died")
-                    break
-                self.boss.bs_loose_health(p_attack-b_armour)
-                boss_health_tape.append(self.boss.boss_health)
-            else:
-                boss_health_tape.append(self.boss.boss_health)
-        
-        raid_health_tape = []
-        for player in self.player_list:
-            for p_defense, b_attack in zip(player.player_defend(), self.boss.boss_attack()):
-                if b_attack > p_defense:
-                    """
-                    # TODO: here i am iterating through the list of players and damaging each one, 
-                    # for simplicity i want the damage to one player to deduct out of 
-                    # the total pool of health of the whole raid instead of just out of the player.
-                    # That way I can just report that the raid has died.
-                    """
-                    player.take_damage(b_attack - p_defense)
 
-    def make_fight(self):
-        boss_damage_tape = []
-        while self.player_party_total_health > 0:
-            self.player_party_total_health -= abs(self.boss.boss_attack() - self.player.player_defend()) # block needs to be added here
-            boss_damage_tape.append(self.player_party_total_health)
-        player_damage_tape = []
-        while self.boss.boss_health > 0:
-            self.boss.boss_health -= sum([abs(player.player_attack() - self.boss.boss_armour()) for player in self.player_list]) # block needs to be added here
+def vis_encounters(list_of_raids):
+    return np.vstack([raid.get_raid_attack() for raid in list_of_raids])
 
 
 
+if __name__ == "__main__":
+    # boss vectors
+    boss_attack_vector = np.random.rand(1,3)
+    boss_defense_vector = np.random.rand(1,3)
+    sire_denathrius = Boss("sire_denathrius", bs_health=10**6, boss_attack=10000, armour=10000, attack_vector=boss_attack_vector, defense_vector=boss_defense_vector)
 
-
-
-#     def __str__(self):
-#         class_info = """
-# This adventurer is a: {}
-# HEALTH -----> {}
-# {}/MISS -----> {} DMG / %{}
-# {}/MISS -----> {} DMG / %{}
-# DODGE CHANCE -----> %{}
-#         """.format(self.pl_name, self.pl_health, self.pl_atk1_name, self.pl_atk1dmg, self.pl_atk1miss,
-#                    self.pl_atk2_name, self.pl_atk2dmg, self.pl_atk2miss, self.pl_dodge)
-#         return class_info
-
-
-#     def get_atk1_name(self):
-#         return self.pl_atk1_name
-
-#     def get_atk2_name(self):
-#         return self.pl_atk2_name
-
-#     def get_pl_health(self):
-#         return self.pl_health
-
-#     def get_atk1_miss(self):
-#         return self.pl_atk1miss
-
-#     def get_atk2_miss(self):
-#         return self.pl_atk2miss
-
-#     def get_atk1_dmg(self):
-#         return self.pl_atk1dmg
-
-#     def get_atk2_dmg(self):
-#         return self.pl_atk1dmg
-
-#     def get_atk_sheet(self):
-#         atk_sheet = """
-# CURRENT HEALTH -----> {}
-# {}/MISS -----> {} DMG / %{}
-# {}/MISS -----> {} DMG / %{}
-# BOSS HEALTH -----> {}
-#         """.format(player.get_pl_health(), self.pl_atk1_name, self.pl_atk1dmg, self.pl_atk1miss, self.pl_atk2_name, self.pl_atk2dmg, self.pl_atk2miss, boss.get_bs_health())
-#         return atk_sheet
-
-#     def pl_lose_health(self, damage):
-#         self.pl_health -= damage
-
-#     def get_dodge_chance(self):
-#         return self.pl_dodge
-
-#     def pl_healed(self, healed):
-#         self.pl_health += healed
-
-#     def pl_get_name(self):
-#         return self.pl_name
-
-
-
-        
-
-
-# def menu():
-
-#     player = player_constructor("null", 0, 0, 0, 0, 0, 0, "null", "null") #blank to be reassigned
-
-#     #Assigning Pre-made classes to variables
-#     warrior = player_constructor("Warrior", 100, 50, 10, 100, 20, 2, "RAMPAGE", "SHIELD CRASH")
-#     gunner = player_constructor("Gunner", 75, 20, 5, 30, 25, 5, "SHOOT", "ANNIHILATE")
-#     ninja = player_constructor("Ninja", 65, 25, 3, 40, 13, 15, "STRIKE", "WEAK SPOT")
-
-#     boss = Boss("JIM", 200, 15, 5, 35, 30)
-
-#     selected = False
-
-#     while selected == False:
-#         choice = int(input("Select your class: (1)Warrior, (2)Gunner, (3)Ninja or (0)For more info "))
-#         if choice == 1:
-#             player = warrior
-#             selected = True
-#         if choice == 2:
-#             player = gunner
-#             selected = True
-#         if choice == 3:
-#             player = ninja
-#             selected = True
-
-#         if choice == 0:
-#             player = warrior
-#             print(player)
-#             player = gunner
-#             print(player)
-#             player = ninja
-#             print(player)
-
-#     print()
-#     print(f"You are playing as a: {player.pl_get_name()}")
-
-#     print(f"As the {player.pl_get_name()} journeys through the dungeon, they encounter a big beast!")
-#     print("Combat is initiated!")
-#     print("The player goes first!")
-
-#     turn_counter = 1
-#     print(f"Turn {turn_counter}")
-
-#     while True:
-#         riposte_damage = random.randint(15,30)
-#         turn_counter += 1
-#         print(player.get_atk_sheet())
-#         action = int(input(f"Which action do you want to take?: (1){player.get_atk1_name()} (2){player.get_atk2_name()} (3)HEAL "))
-#         pl_chance = random.randint(1, 100)
-
-#         if action == 1:
-#             if pl_chance <= player.get_atk1_miss():
-#                 print("Attack missed. Wait until next turn to take another action.")
-#             else:
-#                 print(f"You hit the boss with {player.get_atk1_name()} and deal {player.get_atk1_dmg()} DMG to the boss")
-#                 boss.bs_loose_health(player.get_atk1_dmg())
-#         if action == 2:
-#             if pl_chance <= player.get_atk1_miss():
-#                 print("Attack missed. Wait until next turn to take another action.")
-#             else:
-#                 print(f"You hit the boss with {player.get_atk2_name()} and deal {player.get_atk2_dmg()} DMG to the boss ")
-#                 boss.bs_loose_health(player.get_atk2_dmg())
-#         if action == 3:
-#             heal_val = random.randint(5,20)
-#             print(f"You have healed for {heal_val} HEALTH")
-#             player.pl_healed(heal_val)
-#             print(player.get_pl_health())
-
-#         if boss.get_bs_health() <= 0:
-#             break
-
-#         print()
-#         print("Bosses turn: ")
-
-#         bs_choice_chance = random.randint(1,2)
-#         bs_miss_chance = random.randint(1,100)
-
-#         if bs_choice_chance == 1:
-#             if bs_miss_chance <= (boss.bs_get_atk1_miss() + player.get_dodge_chance()):
-#                 print("The boss misses their attack.")
-#                 print(f"You riposte! You deal {riposte_damage} DMG back!")
-#                 boss.bs_loose_health(riposte_damage)
-#             else:
-#                 print(f"The boss hits you dealing {boss.bs_get_atk1_dmg()} DMG")
-#                 player.pl_lose_health(boss.bs_get_atk1_dmg())
-
-#         if bs_choice_chance == 2:
-#             if bs_miss_chance <= (boss.bs_get_atk2_miss() + player.get_dodge_chance()):
-#                 print("The boss misses their attack.")
-#                 print(f"You riposte! You deal {riposte_damage} DMG back!")
-#                 boss.bs_loose_health(riposte_damage)
-#             else:
-#                 print(f"The boss hits you dealing {boss.bs_get_atk2_dmg()} DMG")
-#                 player.pl_lose_health(boss.bs_get_atk2_dmg())
-
-#             if player.get_pl_health() <= 0:
-#                 print(f"Oh no! {boss.bs_get_name()} has defeated you! Try again:")
-#                 quit()
-
-#             print(f"Turn {turn_counter}")
-
-#     print(f"Congratulations you have defeated {boss.bs_get_name()}!")
-
-
+    meta_vectors_attack = []
+    meta_vectors_defense = []
+    for _ in range(100):
+        a = np.random.rand(1,3)
+        a[0,2] += 1 # creates a bias in the vector hence a "meta"
+        a[0,0] += 0.5
+        meta_vectors_attack.append(a)
+        d = np.random.rand(1,3)
+        d[0,1] += 1
+        d[0,2] += 0.5
+        meta_vectors_defense.append(d)
+    meta_raids = [Raid(sire_denathrius, raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(meta_vectors_attack, meta_vectors_defense)]
+    
+    non_meta_attack_vectors = [np.random.rand(1,3) for _ in range(120)]
+    non_meta_defense_vectors = [np.random.rand(1,3) for _ in range(120)]
+    non_meta_raids = [Raid(sire_denathrius, raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(non_meta_attack_vectors, non_meta_defense_vectors)]
+    all_raids = meta_raids + non_meta_raids
+    print(len(all_raids))
+    vissy = vis_encounters(all_raids)
+    fig = plt.figure()
+    ax = fig.add_subplot(projection="3d")
+    ax.scatter(vissy[:][0], vissy[:][1], vissy[:][2])
+    plt.show()
 
 

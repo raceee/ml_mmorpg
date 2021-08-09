@@ -92,7 +92,8 @@ class Raid:
     
     # @property
     def get_raid_attack(self):
-        return self.normed_attack_vector
+        print("yo",self.normed_attack_vector[0])
+        return self.normed_attack_vector[0]
     
     @property
     def get_raid_defense(self):
@@ -100,7 +101,11 @@ class Raid:
 
 
 def vis_encounters(list_of_raids):
-    return np.vstack([raid.get_raid_attack() for raid in list_of_raids])
+    fig = plt.figure()
+    ax = fig.add_subplot(projection="3d")
+    for raid in list_of_raids:
+        ax.scatter(raid.get_raid_attack()[0], raid.get_raid_attack()[1], raid.get_raid_attack()[2])
+    plt.show()
 
 
 
@@ -114,12 +119,12 @@ if __name__ == "__main__":
     meta_vectors_defense = []
     for _ in range(100):
         a = np.random.rand(1,3)
-        a[0,2] += 1 # creates a bias in the vector hence a "meta"
-        a[0,0] += 0.5
+        a[0,2] += 10 # creates a bias in the vector hence a "meta"
+        a[0,0] += 5
         meta_vectors_attack.append(a)
         d = np.random.rand(1,3)
-        d[0,1] += 1
-        d[0,2] += 0.5
+        d[0,1] += 10
+        d[0,2] += 5
         meta_vectors_defense.append(d)
     meta_raids = [Raid(sire_denathrius, raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(meta_vectors_attack, meta_vectors_defense)]
     
@@ -129,9 +134,6 @@ if __name__ == "__main__":
     all_raids = meta_raids + non_meta_raids
     print(len(all_raids))
     vissy = vis_encounters(all_raids)
-    fig = plt.figure()
-    ax = fig.add_subplot(projection="3d")
-    ax.scatter(vissy[:][0], vissy[:][1], vissy[:][2])
-    plt.show()
+    # TODO: figure out vis
 
 

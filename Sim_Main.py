@@ -31,12 +31,8 @@ class Boss:
 
     def bs_loose_health(self, damage):
         self.boss_health -= damage #fantastic code tripp
+
     
-    def vector_set(self):
-        return
-    
-    def boss_optimize(self, dataframe):
-        pass
 
 
 class Player:
@@ -76,8 +72,14 @@ class Player:
 
 
 class Raid:
-    def __init__(self, boss, raid_health, raid_attack, raid_defense):
-        self.boss = boss
+    def __init__(self, raid_health, raid_attack, raid_defense):
+        """
+        Class that represents the collection of players seeking to kill the boss
+        raid_health:int some number representing the total health of the entire raid
+        raid_attack:vector a vector where each element of the vector represents the raids power in a certain 'power'
+        raid_defense:vector a vector of the raid and its resistivity to certain types of damage
+
+        """
         self.raid_health = raid_health
         self.raid_attack = raid_attack
         self.raid_defense = raid_defense
@@ -85,29 +87,65 @@ class Raid:
         self.set_raid_defense()
     
     def set_raid_attack(self):
+        """sets a hidden class attribute that are the normed version of the attack vector"""
         self.normed_attack_vector = self.raid_attack / np.linalg.norm(self.raid_attack)
     
     def set_raid_defense(self):
+        """sets a hidden class attribute that are the normed version of the defense vector"""
         self.normed_defesnse_vector = self.raid_defense / np.linalg.norm(self.raid_defense)
     
-    # @property
+    @property
     def get_raid_attack(self):
-        print("yo",self.normed_attack_vector[0])
         return self.normed_attack_vector[0]
     
     @property
     def get_raid_defense(self):
-        return self.normed_defesnse_vector
+        return self.normed_defesnse_vector[0]
 
 
-def vis_encounters(list_of_raids):
-    fig = plt.figure()
-    ax = fig.add_subplot(projection="3d")
-    for raid in list_of_raids:
-        ax.scatter(raid.get_raid_attack()[0], raid.get_raid_attack()[1], raid.get_raid_attack()[2])
-    plt.show()
 
+class SimulationPlate:
+    def __init__(self, list_of_raids:list, boss) -> None:
+        self.list_of_raids = list_of_raids
+        self.boss = boss
+        pass
+    
+    def fight(self):
+        '''
+        TODO: TRIPP
+        This function will be used to simulate a fight
+            use being: we want to see the boss win after it optimizes
+        
+        SPEC:
+        The boss must fight each raid of the list_of_raids
+            The boss and raid must deal damage that is the difference between the attack vector minus the defense vector IF the attacking vector is a higher value
+                EX. If the bosses attacking vector is [5,10,15] the raid defense vector is [7, 9, 13] then the total damage will be 0 + 1 + 2 = 3 total damage
+            The boss will attack the raid and see how many "turns" it takes to kill the raid-- the fight will restart and then the raid will attack and see how many turns it takes to kill the boss
+            The opponent with the few amount of turns to kill the other player will "win" the fight
+        '''
+        pass
+    
+    def KNN(self):
+        '''
+        TODO: RACE
+        Implement KNN to the attack and defense vectors for the boss
+            1. Mark Regions
+            2. Find Centroid of most populated region
+        '''
 
+    def vis_raid_attack_vectors(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(projection="3d")
+        for raid in self.list_of_raids:
+            ax.scatter(raid.get_raid_attack()[0], raid.get_raid_attack()[1], raid.get_raid_attack()[2])
+        plt.show()
+    
+    def vis_raid_defense_vectors(self):
+        fig = plt.figure()
+        ax = fig.add_subplot(projection="3d")
+        for raid in self.list_of_raids:
+            ax.scatter(raid.get_raid_defense()[0], raid.get_raid_defense()[1], raid.get_raid_defense()[2])
+        plt.show()
 
 if __name__ == "__main__":
     # boss vectors
@@ -126,10 +164,9 @@ if __name__ == "__main__":
         d[0,1] += 10
         d[0,2] += 5
         meta_vectors_defense.append(d)
-    meta_raids = [Raid(sire_denathrius, raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(meta_vectors_attack, meta_vectors_defense)]
+    meta_raids = [Raid(raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(meta_vectors_attack, meta_vectors_defense)]
     
     non_meta_attack_vectors = [np.random.rand(1,3) for _ in range(120)]
     non_meta_defense_vectors = [np.random.rand(1,3) for _ in range(120)]
-    non_meta_raids = [Raid(sire_denathrius, raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(non_meta_attack_vectors, non_meta_defense_vectors)]
+    non_meta_raids = [Raid(raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(non_meta_attack_vectors, non_meta_defense_vectors)]
     all_raids = meta_raids + non_meta_raids
-    vis_encounters(all_raids)

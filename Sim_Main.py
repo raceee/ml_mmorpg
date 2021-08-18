@@ -161,6 +161,7 @@ class SimulationPlate:
         TODO: RACE
         Implement KNN to the attack and defense vectors for the boss
             1. Mark Regions
+            3. Hello
             2. Find Centroid of most populated region
         '''
 

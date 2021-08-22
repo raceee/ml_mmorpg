@@ -2,6 +2,8 @@ import numpy as np
 import random
 import math
 import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+
 
 class Boss:
     def __init__(self, bs_name, bs_health, boss_attack, armour, attack_vector, defense_vector):
@@ -108,7 +110,8 @@ class SimulationPlate:
     def __init__(self, list_of_raids:list, boss) -> None:
         self.list_of_raids = list_of_raids
         self.boss = boss
-        pass
+        self.raid_attack_vectors = np.squeeze(np.stack([np.asarray(raid.normed_attack_vector) for raid in self.list_of_raids], axis=0))
+        self.raid_defense_vectors = np.squeeze(np.stack([np.asarray(raid.normed_defense_vector) for raid in self.list_of_raids], axis=0))
     
     def fight(self):
         '''
@@ -163,6 +166,10 @@ class SimulationPlate:
             1. Mark Regions
             2. Find Centroid of most populated region
         '''
+        print(type(self.raid_attack_vectors[0]))
+        print(self.raid_attack_vectors.shape)
+        attack_fitter = KMeans(n_clusters=5, random_state=0, algorithm="elkan").fit(self.raid_attack_vectors)
+        print(attack_fitter.cluster_centers_)
 
     def vis_raid_attack_vectors(self):
         fig = plt.figure()
@@ -201,3 +208,5 @@ if __name__ == "__main__":
     non_meta_defense_vectors = [np.random.rand(1,3) for _ in range(120)]
     non_meta_raids = [Raid(raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(non_meta_attack_vectors, non_meta_defense_vectors)]
     all_raids = meta_raids + non_meta_raids
+    fight_set = SimulationPlate(all_raids, sire_denathrius)
+    fight_set.KNN()

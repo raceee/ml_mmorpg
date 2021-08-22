@@ -170,26 +170,15 @@ class SimulationPlate:
         '''
         pca = PCA(2)
         pca_attack = pca.fit_transform(self.raid_attack_vectors)
-        print(type(self.raid_attack_vectors[0]))
-        print(self.raid_attack_vectors.shape)
         attack_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
         attack_labels = attack_fitter.fit_predict(pca_attack)
         attack_centroids = attack_fitter.cluster_centers_
-        # defense_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan").fit_predict(self.raid_defense_vectors)
         all_labels = np.unique(attack_labels)
-
         for i in all_labels:
             plt.scatter(pca_attack[attack_labels == i, 0], pca_attack[attack_labels == i, 1], label = i)
         plt.scatter(attack_centroids[:,0] , attack_centroids[:,1] , s = 80, color = 'k')
         plt.legend()
         plt.show()
-
-        print(type(attack_labels))
-        print(attack_labels)
-        # print("CLUSTER CENTERS: ")
-        # print(attack_fitter.cluster_centers_)
-        # print("INERTIA_")
-        # print(attack_fitter.inertia_)
 
     def vis_raid_attack_vectors(self):
         fig = plt.figure()

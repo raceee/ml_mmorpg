@@ -168,14 +168,27 @@ class SimulationPlate:
             2. Find Centroid of most populated region
         Good reference: https://www.askpython.com/python/examples/plot-k-means-clusters-python
         '''
-        pca = PCA(2)
-        pca_attack = pca.fit_transform(self.raid_attack_vectors)
+        # pca = PCA(2)
+        # pca_attack = pca.fit_transform(self.raid_attack_vectors)
         attack_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
-        attack_labels = attack_fitter.fit_predict(pca_attack)
+        attack_labels = attack_fitter.fit_predict(self.raid_attack_vectors)
+        print("inertia", attack_fitter.inertia_)
+        print("centers: ", attack_fitter.cluster_centers_)
+        print("get params, ", attack_fitter.get_params())
+        print("ATTACK LABELS", attack_labels)
         attack_centroids = attack_fitter.cluster_centers_
         all_labels = np.unique(attack_labels)
+        (u, c) = np.unique(attack_labels, return_counts=True)
+        print("all labels", all_labels)
+        print("counts", np.asarray((u,c)).T )
+        meta_cluster = np.argmax(np.max(np.asarray((u,c)).T, axis=1))
+        print("centers: ", attack_fitter.cluster_centers_[meta_cluster])
+
+ 
+
+
         for i in all_labels:
-            plt.scatter(pca_attack[attack_labels == i, 0], pca_attack[attack_labels == i, 1], label = i)
+            plt.scatter(self.raid_attack_vectors[attack_labels == i, 0], self.raid_attack_vectors[attack_labels == i, 1], label = i)
         plt.scatter(attack_centroids[:,0] , attack_centroids[:,1] , s = 80, color = 'k')
         plt.legend()
         plt.show()

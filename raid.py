@@ -158,7 +158,8 @@ class SimulationPlate:
     def KNN(self):
         '''
         returns: vector of the meta -- to be used in setting the appropriate boss vectors
-        Notes: the center is chosen by finding the minimum "concentration" future proofing. Some clusters may have more elements but high concentration comparitively
+        Notes: the center is chosen by finding the minimum "concentration" future proofing. 
+        Some clusters may have more elements but high concentration comparitively
         '''
         attack_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
         attack_labels = attack_fitter.fit_predict(self.raid_attack_vectors)

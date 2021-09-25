@@ -35,8 +35,6 @@ class Boss:
     def bs_loose_health(self, damage):
         self.boss_health -= damage #fantastic code tripp
 
-    
-
 
 class Player:
     """
@@ -106,7 +104,6 @@ class Raid:
         return self.normed_defense_vector[0]
 
 
-
 class SimulationPlate:
     def __init__(self, list_of_raids:list, boss) -> None:
         self.list_of_raids = list_of_raids
@@ -162,36 +159,28 @@ class SimulationPlate:
     
     def KNN(self):
         '''
-        TODO: RACE
-        Implement KNN to the attack and defense vectors for the boss
-            1. Mark Regions
-            2. Find Centroid of most populated region
-        Good reference: https://www.askpython.com/python/examples/plot-k-means-clusters-python
+        returns: vector of the meta -- to be used in setting the appropriate boss vectors
+        Notes: the center is chosen by finding the minimum "concentration" future proofing. Some clusters may have more elements but high concentration comparitively
         '''
-        # pca = PCA(2)
-        # pca_attack = pca.fit_transform(self.raid_attack_vectors)
         attack_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
         attack_labels = attack_fitter.fit_predict(self.raid_attack_vectors)
-        print("inertia", attack_fitter.inertia_)
-        print("centers: ", attack_fitter.cluster_centers_)
-        print("get params, ", attack_fitter.get_params())
-        print("ATTACK LABELS", attack_labels)
-        attack_centroids = attack_fitter.cluster_centers_
-        all_labels = np.unique(attack_labels)
         (u, c) = np.unique(attack_labels, return_counts=True)
-        print("all labels", all_labels)
-        print("counts", np.asarray((u,c)).T )
-        meta_cluster = np.argmax(np.max(np.asarray((u,c)).T, axis=1))
-        print("centers: ", attack_fitter.cluster_centers_[meta_cluster])
-
- 
-
-
-        for i in all_labels:
-            plt.scatter(self.raid_attack_vectors[attack_labels == i, 0], self.raid_attack_vectors[attack_labels == i, 1], label = i)
-        plt.scatter(attack_centroids[:,0] , attack_centroids[:,1] , s = 80, color = 'k')
-        plt.legend()
-        plt.show()
+        counts = np.asarray((u,c)).T
+        concentration = []
+        for label in np.unique(attack_labels):
+            total_err = 0
+            for vec, l in zip(self.raid_attack_vectors, attack_labels):
+                if label == l:
+                    total_err += np.linalg.norm(attack_fitter.cluster_centers_[l] - vec) ** 2
+            class_avg_error = total_err / counts[label][1]
+            concentration.append(class_avg_error)
+        # vis used to confirm vectors
+        # for i in all_labels:
+        #     plt.scatter(self.raid_attack_vectors[attack_labels == i, 0], self.raid_attack_vectors[attack_labels == i, 1], label = i)
+        # plt.scatter(attack_centroids[:,0] , attack_centroids[:,1] , s = 80, color = 'k')
+        # plt.legend()  
+        # plt.show()
+        return attack_fitter.cluster_centers_[np.argmin(concentration)]
 
     def vis_raid_attack_vectors(self):
         fig = plt.figure()

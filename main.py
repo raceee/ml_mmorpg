@@ -25,5 +25,6 @@ if __name__ == "__main__":
     non_meta_raids = [Raid(raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(non_meta_attack_vectors, non_meta_defense_vectors)]
     all_raids = meta_raids + non_meta_raids
     fight_set = SimulationPlate(all_raids, sire_denathrius)
+    fight_set.fight()
     new_boss_vec = fight_set.KNN()
     print(new_boss_vec)

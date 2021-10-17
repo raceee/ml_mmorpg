@@ -10,16 +10,19 @@ class Boss:
         self.boss_health = bs_health
         self.boss_dps = boss_attack
         self.boss_armour = armour
-        self.initial_boss_defense_vector = attack_vector
-        self.initial_boss_offense_vector = defense_vector
+        self.initial_boss_defense_vector = defense_vector[0]
+        self.initial_boss_offense_vector = attack_vector[0]
+        self.attack_vector = self.set_boss_attack()
+        self.defense_vector = self.set_boss_defense()
     
     def set_boss_attack(self):
-        l2 = math.sqrt(sum([stat**2 for stat in self.initial_boss_offense_vector]))
-        self.attack_vector = [power / l2 for power in self.initial_boss_offense_vector]
+        print("hello", self.initial_boss_offense_vector)
+        l2 = math.sqrt(sum([int(stat)**2 for stat in self.initial_boss_offense_vector]))
+        return [power / l2 for power in self.initial_boss_offense_vector]
     
     def set_boss_defense(self):
         l2 = math.sqrt(sum([stat**2 for stat in self.initial_boss_defense_vector]))
-        self.defense_vector = [power / l2 for power in self.initial_boss_defense_vector]
+        return [power / l2 for power in self.initial_boss_defense_vector]
 
     def boss_attack(self):
         return self.player_attack * self.attack_vector
@@ -137,10 +140,13 @@ class SimulationPlate:
                damage_spread = []
                for resistance, dam in zip(raid_true_defense, boss_true_damage):
                   taken_damage = dam - resistance
+                  print("damage {} resistance {}".format(dam , resistance))
+                  print("taken Damage: ", taken_damage)
                   if taken_damage > 0:
                       damage_spread.append(taken_damage)
                damage = sum(damage_spread)
                raid_health_tape.append(raid.raid_health - damage)
+               print("Raid Health Tape: ", raid_health_tape, len(raid_health_tape))
 
         for raid in self.list_of_raids:
             raid_true_attack = [raid.raid_attack * d for d in raid.normed_attack_vector]
@@ -152,6 +158,7 @@ class SimulationPlate:
                         raid_damage_spread.append(boss_taken_damage)
                 dams = sum(raid_damage_spread)
                 boss_health_tape.append(self.boss.boss_health - dams)
+                print("Boss Health Tape: ", boss_health_tape, len(boss_health_tape))
             self.boss.boss_health = boss_full_health
         pass
     

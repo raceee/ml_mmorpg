@@ -140,7 +140,7 @@ class SimulationPlate:
                damage_spread = []
                for resistance, dam in zip(raid_true_defense, boss_true_damage):
                   taken_damage = dam - resistance
-                  print("damage {} resistance {}".format(dam , resistance))
+                  print("damage {} resistance {}".format(dam , resistance)) # BUG: the damage value here is infinity, which cannot be super true
                   print("taken Damage: ", taken_damage)
                   if taken_damage > 0:
                       damage_spread.append(taken_damage)

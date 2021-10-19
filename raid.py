@@ -5,37 +5,18 @@ from sklearn.cluster import KMeans
 
 
 class Boss:
-    def __init__(self, bs_name, bs_health, boss_attack, armour, attack_vector, defense_vector):
-        self.boss_name = bs_name
-        self.boss_health = bs_health
-        self.boss_dps = boss_attack
-        self.boss_armour = armour
-        self.initial_boss_defense_vector = defense_vector[0]
-        self.initial_boss_offense_vector = attack_vector[0]
-        self.attack_vector = self.set_boss_attack()
-        self.defense_vector = self.set_boss_defense()
-    
-    def set_boss_attack(self):
-        print("hello", self.initial_boss_offense_vector)
-        l2 = math.sqrt(sum([int(stat)**2 for stat in self.initial_boss_offense_vector]))
-        return [power / l2 for power in self.initial_boss_offense_vector]
-    
-    def set_boss_defense(self):
-        l2 = math.sqrt(sum([stat**2 for stat in self.initial_boss_defense_vector]))
-        return [power / l2 for power in self.initial_boss_defense_vector]
+    def __init__(self, boss_health, boss_attack, boss_defense, dps=1000, armour=1000):
+        self.health = boss_health
+        self.dps = dps
+        self.armour = armour
+        self.boss_attack = self.set_boss_attack(boss_attack)
+        self.boss_defense = self.set_boss_defense(boss_defense)
 
-    def boss_attack(self):
-        return self.player_attack * self.attack_vector
-    
-    def boss_defend(self):
-        return self.boss_armour * self.defense_vector
-    
-    def get_bs_health(self):
-        return self.bs_health
+    def set_boss_attack(self, attack):
+        pass
 
-    def bs_loose_health(self, damage):
-        self.boss_health -= damage #fantastic code tripp
-
+    def set_boss_defense(self, defense):
+        pass
 
 class Player:
     """

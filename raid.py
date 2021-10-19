@@ -13,10 +13,12 @@ class Boss:
         self.boss_defense = self.set_boss_defense(boss_defense)
 
     def set_boss_attack(self, attack):
-        pass
+        a = attack / np.sum(attack)
+        return a * self.dps
 
     def set_boss_defense(self, defense):
-        pass
+        d = defense / np.sum(defense)
+        return d * self.armour
 
 class Player:
     """

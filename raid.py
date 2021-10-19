@@ -74,7 +74,7 @@ class Player:
 
 
 class Raid:
-    def __init__(self, raid_health, raid_attack, raid_defense):
+    def __init__(self, raid_health, raid_attack, raid_defense, dps=1000, armour=1000):
         """
         Class that represents the collection of players seeking to kill the boss
         raid_health:int some number representing the total health of the entire raid
@@ -83,26 +83,24 @@ class Raid:
 
         """
         self.raid_health = raid_health
-        self.raid_attack = raid_attack
-        self.raid_defense = raid_defense
-        self.set_raid_attack()
-        self.set_raid_defense()
+        self.dps = dps
+        self.armour = armour
+        self.raid_attack = self.set_raid_attack(raid_attack)
+        self.raid_defense = self.set_raid_defense(raid_defense)
+
     
-    def set_raid_attack(self):
+    def set_raid_attack(self, attack_vec):
         """sets a hidden class attribute that are the normed version of the attack vector"""
-        self.normed_attack_vector = self.raid_attack / np.linalg.norm(self.raid_attack)
+        a = attack_vec / np.sum(attack_vec)
+        print("a1", a)
+        return a * self.dps
+
     
-    def set_raid_defense(self):
+    def set_raid_defense(self, defense_vec):
         """sets a hidden class attribute that are the normed version of the defense vector"""
-        self.normed_defense_vector = self.raid_defense / np.linalg.norm(self.raid_defense)
-    
-    @property
-    def get_raid_attack(self):
-        return self.normed_attack_vector[0]
-    
-    @property
-    def get_raid_defense(self):
-        return self.normed_defense_vector[0]
+        d = defense_vec / np.sum(defense_vec)
+        return d * self.armour
+
 
 
 class SimulationPlate:
@@ -133,7 +131,7 @@ class SimulationPlate:
 
         boss_true_damage = [self.boss.boss_dps * a for a in self.boss.attack_vector]
         boss_true_defense = [self.boss.boss_armour * b for b in self.boss.defense_vector]
-
+        print("self.list_of_raids: ", self.list_of_raids)
         for raid in self.list_of_raids:
             print("raid.raid_defense: {} raid.normed_defense_vector: {}".format(raid.raid_defense, raid.normed_defense_vector))
             raid_true_defense = [raid.raid_defense * c for c in raid.normed_defense_vector]

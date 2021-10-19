@@ -135,18 +135,20 @@ class SimulationPlate:
         boss_true_defense = [self.boss.boss_armour * b for b in self.boss.defense_vector]
 
         for raid in self.list_of_raids:
-           raid_true_defense = [raid.raid_defense * c for c in raid.normed_defense_vector]
-           while raid.raid_health > 0:
-               damage_spread = []
-               for resistance, dam in zip(raid_true_defense, boss_true_damage):
-                  taken_damage = dam - resistance
-                  print("damage {} resistance {}".format(dam , resistance)) # BUG: the damage value here is infinity, which cannot be super true
-                  print("taken Damage: ", taken_damage)
-                  if taken_damage > 0:
-                      damage_spread.append(taken_damage)
-               damage = sum(damage_spread)
-               raid_health_tape.append(raid.raid_health - damage)
-               print("Raid Health Tape: ", raid_health_tape, len(raid_health_tape))
+            print("raid.raid_defense: {} raid.normed_defense_vector: {}".format(raid.raid_defense, raid.normed_defense_vector))
+            raid_true_defense = [raid.raid_defense * c for c in raid.normed_defense_vector]
+            print("raid_true_defense: ", raid_true_defense)
+            while raid.raid_health > 0:
+                damage_spread = []
+                for resistance, dam in zip(raid_true_defense, boss_true_damage):
+                    taken_damage = dam - resistance
+                    print("damage {} resistance {}".format(dam , resistance)) # BUG: the damage value here is infinity, which cannot be super true
+                    print("taken Damage: ", taken_damage)
+                    if taken_damage > 0:
+                        damage_spread.append(taken_damage)
+                damage = sum(damage_spread)
+                raid_health_tape.append(raid.raid_health - damage)
+                print("Raid Health Tape: ", raid_health_tape, len(raid_health_tape))
 
         for raid in self.list_of_raids:
             raid_true_attack = [raid.raid_attack * d for d in raid.normed_attack_vector]

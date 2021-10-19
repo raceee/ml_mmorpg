@@ -75,7 +75,6 @@ class Raid:
     def set_raid_attack(self, attack_vec):
         """sets a hidden class attribute that are the normed version of the attack vector"""
         a = attack_vec / np.sum(attack_vec)
-        print("a1", a)
         return a * self.dps
 
     
@@ -90,8 +89,6 @@ class SimulationPlate:
     def __init__(self, list_of_raids:list, boss) -> None:
         self.list_of_raids = list_of_raids
         self.boss = boss
-        self.raid_attack_vectors = np.squeeze(np.stack([np.asarray(raid.normed_attack_vector) for raid in self.list_of_raids], axis=0))
-        self.raid_defense_vectors = np.squeeze(np.stack([np.asarray(raid.normed_defense_vector) for raid in self.list_of_raids], axis=0))
     
     def fight(self):
         '''
@@ -106,39 +103,59 @@ class SimulationPlate:
             The boss will attack the raid and see how many "turns" it takes to kill the raid-- the fight will restart and then the raid will attack and see how many turns it takes to kill the boss
             The opponent with the few amount of turns to kill the other player will "win" the fight
         '''
-
-        boss_health_tape = []
-        raid_health_tape = []
-        boss_full_health = self.boss.boss_health
-
-        print("self.list_of_raids: ", self.list_of_raids)
+        allraid_lifespan = []
+        boss_lifespan = []
         for raid in self.list_of_raids:
             raidhp = raid.raid_health
+            raid_health_tape = [] # tracks how many "turns" it took for the boss to kill specific raid
+            boss_health_tape = []
+            # Boss attacks
             while raidhp > 0:
-                damage_spread = []
-                for resistance, dam in zip(raid.raid_defense, self.boss.boss_attack):
-                    taken_damage = dam - resistance
-                    print("damage {} resistance {}".format(dam , resistance)) # BUG: the damage value here is infinity, which cannot be super true
-                    print("taken Damage: ", taken_damage)
-                    if taken_damage > 0:
-                        damage_spread.append(taken_damage)
-                damage = sum(damage_spread)
-                raid_health_tape.append(raid.raid_health - damage)
-                print("Raid Health Tape: ", raid_health_tape, len(raid_health_tape))
+                total_damage = raid.raid_defense - self.boss.boss_attack
+                total_damage = np.sum(total_damage, where=total_damage<0)
+                if total_damage < 0:
+                    raid_health_tape.append(total_damage)
+                    raidhp += total_damage
+            print("raid killed")
+            allraid_lifespan.append(len(raid_health_tape))
+            bosshp = self.boss.health
+            # Raid attacks
+            while bosshp > 0:
+                # print(self.boss.boss_defense)
+                # print(raid.raid_attack)
+                total_damage = self.boss.boss_defense - raid.raid_attack
+                # print(total_damage)
+                total_damage = np.sum(total_damage, where=total_damage<0)
+                if total_damage < 0:
+                    boss_health_tape.append(total_damage)
+                    bosshp += total_damage
+            print("boss killed")
+            boss_lifespan.append(len(boss_health_tape))
+        print("raid_lifespan: ", allraid_lifespan)
+        print("boss_lifespan: ", boss_lifespan)
+                # for resistance, dam in zip(raid.raid_defense, self.boss.boss_attack):
+                #     taken_damage = dam - resistance
+                #     lost_hp = sum([loss for loss in taken_damage if loss > 0])
+                #     print('lost_hp', lost_hp)
+                #     if lost_hp > 0:
+                #         damage_spread.append(lost_hp)
+                # damage = sum(damage_spread)
+                # raid_health_tape.append(raid.raid_health - damage)
+                # print("Raid Health Tape: ", raid_health_tape, len(raid_health_tape))
 
-        for raid in self.list_of_raids:
-            raid_true_attack = [raid.raid_attack * d for d in raid.normed_attack_vector]
-            while self.boss.boss_health > 0:
-                raid_damage_spread = []
-                for resistance, dam in zip(boss_true_defense, raid_true_attack):
-                    boss_taken_damage = dam - resistance
-                    if boss_taken_damage > 0:
-                        raid_damage_spread.append(boss_taken_damage)
-                dams = sum(raid_damage_spread)
-                boss_health_tape.append(self.boss.boss_health - dams)
-                print("Boss Health Tape: ", boss_health_tape, len(boss_health_tape))
-            self.boss.boss_health = boss_full_health
-        pass
+        # for raid in self.list_of_raids:
+        #     raid_true_attack = [raid.raid_attack * d for d in raid.normed_attack_vector]
+        #     while self.boss.boss_health > 0:
+        #         raid_damage_spread = []
+        #         for resistance, dam in zip(boss_true_defense, raid_true_attack):
+        #             boss_taken_damage = dam - resistance
+        #             if boss_taken_damage > 0:
+        #                 raid_damage_spread.append(boss_taken_damage)
+        #         dams = sum(raid_damage_spread)
+        #         boss_health_tape.append(self.boss.boss_health - dams)
+        #         print("Boss Health Tape: ", boss_health_tape, len(boss_health_tape))
+        #     self.boss.boss_health = boss_full_health
+        # pass
     
     def KNN(self):
         '''

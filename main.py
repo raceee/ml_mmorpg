@@ -5,7 +5,7 @@ if __name__ == "__main__":
     # boss vectors
     boss_attack_vector = np.random.rand(1,3)
     boss_defense_vector = np.random.rand(1,3)
-    sire_denathrius = Boss("sire_denathrius", bs_health=10**6, boss_attack=10000, armour=10000, attack_vector=boss_attack_vector, defense_vector=boss_defense_vector)
+    sire_denathrius = Boss(boss_health=10**6, boss_attack=boss_attack_vector, boss_defense=boss_defense_vector)
 
     meta_vectors_attack = []
     meta_vectors_defense = []

@@ -109,19 +109,14 @@ class SimulationPlate:
 
         boss_health_tape = []
         raid_health_tape = []
-
         boss_full_health = self.boss.boss_health
 
-        boss_true_damage = [self.boss.boss_dps * a for a in self.boss.attack_vector]
-        boss_true_defense = [self.boss.boss_armour * b for b in self.boss.defense_vector]
         print("self.list_of_raids: ", self.list_of_raids)
         for raid in self.list_of_raids:
-            print("raid.raid_defense: {} raid.normed_defense_vector: {}".format(raid.raid_defense, raid.normed_defense_vector))
-            raid_true_defense = [raid.raid_defense * c for c in raid.normed_defense_vector]
-            print("raid_true_defense: ", raid_true_defense)
-            while raid.raid_health > 0:
+            raidhp = raid.raid_health
+            while raidhp > 0:
                 damage_spread = []
-                for resistance, dam in zip(raid_true_defense, boss_true_damage):
+                for resistance, dam in zip(raid.raid_defense, self.boss.boss_attack):
                     taken_damage = dam - resistance
                     print("damage {} resistance {}".format(dam , resistance)) # BUG: the damage value here is infinity, which cannot be super true
                     print("taken Damage: ", taken_damage)

@@ -1,5 +1,4 @@
 import numpy as np
-import math
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 
@@ -19,41 +18,6 @@ class Boss:
     def set_boss_defense(self, defense):
         d = defense / np.sum(defense)
         return d * self.armour
-
-class Player:
-    """
-    Deprecated too much work, but useful to have for future testing
-    Replaced with Raid for short term use
-    """
-    def __init__(self, pl_name, pl_health, pl_attack, pl_armour, attack_vector, defense_vector):
-        self.player_name = pl_name
-        self.player_health = pl_health
-        self.player_attack = pl_attack
-        self.player_armour = pl_armour
-        self.initial_player_defense_vector = attack_vector
-        self.initial_player_offense_vector = defense_vector
-        self.is_dead = False
-
-    def set_player_attack(self):
-        l2 = math.sqrt(sum([stat**2 for stat in self.initial_player_offense_vector]))
-        self.attack_vector = [power / l2 for power in self.initial_player_offense_vector]
-    
-    def set_player_defense(self):
-        l2 = math.sqrt(sum([stat**2 for stat in self.initial_player_defense_vector]))
-        self.defense_vector = [power / l2 for power in self.initial_player_defense_vector]
-    
-    def player_attack(self):
-        if self.is_dead:
-            return 0
-        return self.player_attack * self.attack_vector
-    
-    def player_defend(self):
-        if self.is_dead:
-            return 0
-        return self.player_armour * self.defense_vector
-    
-    def take_damage(self, damage):
-        self.player_health -= damage
 
 
 class Raid:

@@ -28,3 +28,5 @@ if __name__ == "__main__":
     fight_set.fight()
     new_boss_vec = fight_set.KNN()
     print(new_boss_vec)
+    sire_denathrius.boss_defense = new_boss_vec
+    fight_set.fight()

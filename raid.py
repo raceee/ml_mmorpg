@@ -143,13 +143,16 @@ class SimulationPlate:
         Some clusters may have more elements but high concentration comparitively
         '''
         attack_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
-        attack_labels = attack_fitter.fit_predict(self.raid_attack_vectors)
+        all_attack_vecs = [raid.raid_attack for raid in self.list_of_raids]
+        all_attack_vecs = np.squeeze(np.stack(all_attack_vecs, axis=0))
+        print(all_attack_vecs.shape)
+        attack_labels = attack_fitter.fit_predict(all_attack_vecs)
         (u, c) = np.unique(attack_labels, return_counts=True)
         counts = np.asarray((u,c)).T
         concentration = []
         for label in np.unique(attack_labels):
             total_err = 0
-            for vec, l in zip(self.raid_attack_vectors, attack_labels):
+            for vec, l in zip(all_attack_vecs, attack_labels):
                 if label == l:
                     total_err += np.linalg.norm(attack_fitter.cluster_centers_[l] - vec) ** 2
             class_avg_error = total_err / counts[label][1]

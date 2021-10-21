@@ -100,7 +100,7 @@ class SimulationPlate:
         print("boss score: {} raid score: {}".format(boss_score, raid_score))
 
     
-    def KNN(self):
+    def KNN_defense(self):
         '''
         returns: vector of the meta -- to be used in setting the appropriate boss vectors
         Notes: the center is chosen by finding the minimum "concentration" future proofing. 
@@ -128,6 +128,35 @@ class SimulationPlate:
         # plt.legend()  
         # plt.show()
         return attack_fitter.cluster_centers_[np.argmin(concentration)]
+    
+    def KNN_attack(self):
+        '''
+        returns: vector of the meta -- to be used in setting the appropriate boss vectors
+        Notes: the center is chosen by finding the minimum "concentration" future proofing. 
+        Some clusters may have more elements but high concentration comparitively
+        '''
+        defense_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
+        all_defense_vecs = [raid.raid_defense for raid in self.list_of_raids]
+        all_defense_vecs = np.squeeze(np.stack(all_defense_vecs, axis=0))
+        print(all_defense_vecs.shape)
+        defense_labels = defense_fitter.fit_predict(all_defense_vecs)
+        (u, c) = np.unique(defense_labels, return_counts=True)
+        counts = np.asarray((u,c)).T
+        concentration = []
+        for label in np.unique(defense_labels):
+            total_err = 0
+            for vec, l in zip(all_defense_vecs, defense_labels):
+                if label == l:
+                    total_err += np.linalg.norm(defense_fitter.cluster_centers_[l] - vec) ** 2
+            class_avg_error = total_err / counts[label][1]
+            concentration.append(class_avg_error)
+        # vis used to confirm vectors
+        # for i in all_labels:
+        #     plt.scatter(self.raid_attack_vectors[attack_labels == i, 0], self.raid_attack_vectors[attack_labels == i, 1], label = i)
+        # plt.scatter(attack_centroids[:,0] , attack_centroids[:,1] , s = 80, color = 'k')
+        # plt.legend()  
+        # plt.show()
+        return defense_fitter.cluster_centers_[np.argmin(concentration)]
 
     def vis_raid_attack_vectors(self):
         fig = plt.figure()

@@ -109,7 +109,6 @@ class SimulationPlate:
         attack_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
         all_attack_vecs = [raid.raid_attack for raid in self.list_of_raids]
         all_attack_vecs = np.squeeze(np.stack(all_attack_vecs, axis=0))
-        print(all_attack_vecs.shape)
         attack_labels = attack_fitter.fit_predict(all_attack_vecs)
         (u, c) = np.unique(attack_labels, return_counts=True)
         counts = np.asarray((u,c)).T
@@ -138,7 +137,6 @@ class SimulationPlate:
         defense_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
         all_defense_vecs = [raid.raid_defense for raid in self.list_of_raids]
         all_defense_vecs = np.squeeze(np.stack(all_defense_vecs, axis=0))
-        print(all_defense_vecs.shape)
         defense_labels = defense_fitter.fit_predict(all_defense_vecs)
         (u, c) = np.unique(defense_labels, return_counts=True)
         counts = np.asarray((u,c)).T

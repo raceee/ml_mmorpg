@@ -20,12 +20,12 @@ if __name__ == "__main__":
         meta_vectors_defense.append(d)
     meta_raids = [Raid(raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(meta_vectors_attack, meta_vectors_defense)]
     
-    non_meta_attack_vectors = [np.random.rand(1,3) for _ in range(120)]
-    non_meta_defense_vectors = [np.random.rand(1,3) for _ in range(120)]
+    non_meta_attack_vectors = [np.random.rand(1,3) for _ in range(100)]
+    non_meta_defense_vectors = [np.random.rand(1,3) for _ in range(100)]
     non_meta_raids = [Raid(raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(non_meta_attack_vectors, non_meta_defense_vectors)]
     all_raids = meta_raids + non_meta_raids
     fight_set = SimulationPlate(all_raids, sire_denathrius)
     fight_set.fight()
     sire_denathrius.boss_defense = fight_set.KNN_defense()
-    sire_denathrius.boss_attack = fight_set.KNN_attack()
+    # sire_denathrius.boss_attack = fight_set.KNN_attack()
     fight_set.fight()

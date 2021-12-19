@@ -26,6 +26,12 @@ if __name__ == "__main__":
     all_raids = meta_raids + non_meta_raids
     fight_set = SimulationPlate(all_raids, sire_denathrius)
     fight_set.fight()
+    print("Fight #1. No attack fitting")
     sire_denathrius.boss_defense = fight_set.KNN_defense()
-    # sire_denathrius.boss_attack = fight_set.KNN_attack()
     fight_set.fight()
+    print("Fight #2. Attack vector fitting")
+    sire_denathrius.boss_attack, attack_model = fight_set.KNN_attack()
+    fight_set.fight()
+    print("Fight #3. Attack vector sampled from n-sphere")
+    sire_denathrius.boss_attack = fight_set.n_sphere_sample()
+    

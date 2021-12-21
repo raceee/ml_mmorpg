@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from numpy.core.fromnumeric import size
 from sklearn.cluster import KMeans
 
 
@@ -158,12 +159,36 @@ class SimulationPlate:
         print(attack_fitter.cluster_centers_)
         return attack_fitter.cluster_centers_[np.argmin(concentration)], attack_fitter
 
-    def n_sphere_sample(sphere_center, model):
-        radius = 1000000
-        for center in model.cluster_centers_:
-            distance = np.linalg.norm(center - sphere_center)
-            if distance <= radius:
-                radius = distance
+    def n_sphere_sample(self, sphere_center, model):
+        radius = [np.linalg.norm(center - sphere_center) for center in model.cluster_centers_] # the second smallest radius
+        radius.sort()
+        radius = radius[2]
+        thetas = np.random.randint(181, size=(1, model.cluster_centers_.shape[1] - 1))
+        print("thetas shape ", thetas.shape)
+        sphere_mat = np.zeros((thetas.shape[1],thetas.shape[1]))
+        print("sphere_mat shape ", sphere_mat.shape)
+        for i in range(sphere_mat.shape[0]):
+            for j in range(sphere_mat.shape[1]):
+                if j <= i:
+                    sphere_mat[i,j] = thetas[0,j]
+        print("SPHERE MAT")
+        print(sphere_mat)
+
+        #[[ 15.   0.   0.   0.   0.   0.   0.]
+        # [ 15. 125.   0.   0.   0.   0.   0.]
+        # [ 15. 125. 163.   0.   0.   0.   0.]
+        # [ 15. 125. 163.  33.   0.   0.   0.]
+        # [ 15. 125. 163.  33. 132.   0.   0.]
+        # [ 15. 125. 163.  33. 132. 133.   0.]
+        # [ 15. 125. 163.  33. 132. 133. 163.]]
+        
+
+
+        
+        
+
+
+            
         
         '''
         the capture.png has a good description on how to find n-dimensional coordinates with lambda paramters

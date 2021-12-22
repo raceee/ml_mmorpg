@@ -155,14 +155,15 @@ class SimulationPlate:
         # plt.scatter(attack_centroids[:,0] , attack_centroids[:,1] , s = 80, color = 'k')
         # plt.legend()  
         # plt.show()
-        print("ATTACK CENTERS:")
-        print(attack_fitter.cluster_centers_)
+        # print("ATTACK CENTERS:")
+        # print(attack_fitter.cluster_centers_)
         return attack_fitter.cluster_centers_[np.argmin(concentration)], attack_fitter
 
     def n_sphere_sample(self, sphere_center, model):
         radius = [np.linalg.norm(center - sphere_center) for center in model.cluster_centers_] # the second smallest radius
         radius.sort()
         radius = radius[2]
+        rr = np.random.uniform(0, radius)
         thetas = np.random.randint(181, size=(1, model.cluster_centers_.shape[1] - 1))
         sphere_mat = np.zeros((thetas.shape[1],thetas.shape[1]))
         for i in range(sphere_mat.shape[0]):
@@ -173,11 +174,10 @@ class SimulationPlate:
         sphere_diag = np.cos(sphere_mat.diagonal())
         sphere_lower = np.sin(np.tril(sphere_mat, k=-1))
         sphere_mat = np.triu(np.ones((sphere_diag.shape[0],sphere_diag.shape[0])),k=1) + sphere_lower + np.diag(np.full(sphere_diag.shape[0], sphere_diag))
-        sphere_x = np.cumprod(sphere_mat, axis=1)[:,sphere_diag.shape[0]-1]
-        last_val = radius * np.cumprod(np.sin(thetas), axis=1)[0][sphere_x.shape[0]-1]
+        sphere_x = rr * np.cumprod(sphere_mat, axis=1)[:,sphere_diag.shape[0]-1]
+        last_val = rr * np.cumprod(np.sin(thetas), axis=1)[0][sphere_x.shape[0]-1]
         sphere_x = np.append(sphere_x , last_val)
-        # TODO: get vector correctly placed and randomize radius length
-        return sphere_x
+        return sphere_x + sphere_center
 
     def vis_raid_attack_vectors(self):
         fig = plt.figure()

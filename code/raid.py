@@ -56,18 +56,6 @@ class SimulationPlate:
         self.boss = boss
     
     def fight(self):
-        '''
-        TODO: TRIPP
-        This function will be used to simulate a fight
-            use being: we want to see the boss win after it optimizes
-        
-        SPEC:
-        The boss must fight each raid of the list_of_raids
-            The boss and raid must deal damage that is the difference between the attack vector minus the defense vector IF the attacking vector is a higher value
-                EX. If the bosses attacking vector is [5,10,15] the raid defense vector is [7, 9, 13] then the total damage will be 0 + 1 + 2 = 3 total damage
-            The boss will attack the raid and see how many "turns" it takes to kill the raid-- the fight will restart and then the raid will attack and see how many turns it takes to kill the boss
-            The opponent with the few amount of turns to kill the other player will "win" the fight
-        '''
         allraid_lifespan = []
         boss_lifespan = []
         for raid in self.list_of_raids:
@@ -102,11 +90,6 @@ class SimulationPlate:
 
     
     def KNN_defense(self):
-        '''
-        returns: vector of the meta -- to be used in setting the appropriate boss vectors
-        Notes: the center is chosen by finding the minimum "concentration" future proofing. 
-        Some clusters may have more elements but high concentration comparitively
-        '''
         defense_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
         all_attack_vecs = [raid.raid_attack for raid in self.list_of_raids]
         all_attack_vecs = np.squeeze(np.stack(all_attack_vecs, axis=0))
@@ -121,20 +104,9 @@ class SimulationPlate:
                     total_err += np.linalg.norm(defense_fitter.cluster_centers_[l] - vec) ** 2
             class_avg_error = total_err / counts[label][1]
             concentration.append(class_avg_error)
-        # vis used to confirm vectors
-        # for i in all_labels:
-        #     plt.scatter(self.raid_attack_vectors[attack_labels == i, 0], self.raid_attack_vectors[attack_labels == i, 1], label = i)
-        # plt.scatter(attack_centroids[:,0] , attack_centroids[:,1] , s = 80, color = 'k')
-        # plt.legend()  
-        # plt.show()
         return defense_fitter.cluster_centers_[np.argmin(concentration)]
     
     def KNN_attack(self):
-        '''
-        returns: vector of the meta -- to be used in setting the appropriate boss vectors
-        Notes: the center is chosen by finding the minimum "concentration" future proofing. 
-        Some clusters may have more elements but high concentration comparitively
-        '''
         attack_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
         all_defense_vecs = [raid.raid_defense for raid in self.list_of_raids]
         all_defense_vecs = np.squeeze(np.stack(all_defense_vecs, axis=0))
@@ -149,14 +121,7 @@ class SimulationPlate:
                     total_err += np.linalg.norm(attack_fitter.cluster_centers_[l] - vec) ** 2
             class_avg_error = total_err / counts[label][1]
             concentration.append(class_avg_error)
-        # vis used to confirm vectors
-        # for i in all_labels:
-        #     plt.scatter(self.raid_attack_vectors[attack_labels == i, 0], self.raid_attack_vectors[attack_labels == i, 1], label = i)
-        # plt.scatter(attack_centroids[:,0] , attack_centroids[:,1] , s = 80, color = 'k')
-        # plt.legend()  
-        # plt.show()
-        # print("ATTACK CENTERS:")
-        # print(attack_fitter.cluster_centers_)
+
         return attack_fitter.cluster_centers_[np.argmin(concentration)], attack_fitter
 
     def n_sphere_sample(self, sphere_center, model):

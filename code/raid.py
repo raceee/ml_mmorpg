@@ -164,41 +164,20 @@ class SimulationPlate:
         radius.sort()
         radius = radius[2]
         thetas = np.random.randint(181, size=(1, model.cluster_centers_.shape[1] - 1))
-        print("thetas shape ", thetas.shape)
         sphere_mat = np.zeros((thetas.shape[1],thetas.shape[1]))
-        print("sphere_mat shape ", sphere_mat.shape)
         for i in range(sphere_mat.shape[0]):
             for j in range(sphere_mat.shape[1]):
                 if j <= i:
                     sphere_mat[i,j] = thetas[0,j]
-        print("SPHERE MAT")
-        print(sphere_mat)
 
-        #[[ 15.   0.   0.   0.   0.   0.   0.]
-        # [ 15. 125.   0.   0.   0.   0.   0.]
-        # [ 15. 125. 163.   0.   0.   0.   0.]
-        # [ 15. 125. 163.  33.   0.   0.   0.]
-        # [ 15. 125. 163.  33. 132.   0.   0.]
-        # [ 15. 125. 163.  33. 132. 133.   0.]
-        # [ 15. 125. 163.  33. 132. 133. 163.]]
-        
-
-
-        
-        
-
-
-            
-        
-        '''
-        the capture.png has a good description on how to find n-dimensional coordinates with lambda paramters
-        that represent spherical coordiantes
-        the algorighthm can work by randomizing n numbers between [0,\pi] and with the found radius input those randomized spherical values
-        to create the cartesian coordinates.
-        '''
-
-
-        return
+        sphere_diag = np.cos(sphere_mat.diagonal())
+        sphere_lower = np.sin(np.tril(sphere_mat, k=-1))
+        sphere_mat = np.triu(np.ones((sphere_diag.shape[0],sphere_diag.shape[0])),k=1) + sphere_lower + np.diag(np.full(sphere_diag.shape[0], sphere_diag))
+        sphere_x = np.cumprod(sphere_mat, axis=1)[:,sphere_diag.shape[0]-1]
+        last_val = radius * np.cumprod(np.sin(thetas), axis=1)[0][sphere_x.shape[0]-1]
+        sphere_x = np.append(sphere_x , last_val)
+        # TODO: get vector correctly placed and randomize radius length
+        return sphere_x
 
     def vis_raid_attack_vectors(self):
         fig = plt.figure()

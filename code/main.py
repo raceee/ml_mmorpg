@@ -5,7 +5,7 @@ if __name__ == "__main__":
     # boss vectors
     boss_attack_vector = np.random.rand(1,8)
     boss_defense_vector = np.random.rand(1,8)
-    sire_denathrius = Boss(boss_health=10**6, boss_attack=boss_attack_vector, boss_defense=boss_defense_vector)
+    sire_denathrius = Boss(boss_health=10**4, boss_attack=boss_attack_vector, boss_defense=boss_defense_vector)
 
     meta_vectors_attack = []
     meta_vectors_defense = []
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     
     non_meta_attack_vectors = [np.random.rand(1,8) for _ in range(100)]
     non_meta_defense_vectors = [np.random.rand(1,8) for _ in range(100)]
-    non_meta_raids = [Raid(raid_health=10**6, raid_attack=attack, raid_defense=defense) for attack, defense in zip(non_meta_attack_vectors, non_meta_defense_vectors)]
+    non_meta_raids = [Raid(raid_health=10**4, raid_attack=attack, raid_defense=defense) for attack, defense in zip(non_meta_attack_vectors, non_meta_defense_vectors)]
     all_raids = meta_raids + non_meta_raids
     fight_set = SimulationPlate(all_raids, sire_denathrius)
     fight_set.fight()

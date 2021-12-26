@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from numpy.core.fromnumeric import size
 from sklearn.cluster import KMeans
 
 
@@ -13,6 +12,7 @@ class Boss:
         self.boss_defense = self.set_boss_defense(boss_defense)
 
     def set_boss_attack(self, attack):
+        '''Normalize boss attack dimension and multiply it by the dps of the boss'''
         a = attack / np.sum(attack)
         return a * self.dps
 
@@ -56,6 +56,10 @@ class SimulationPlate:
         self.boss = boss
     
     def fight(self):
+        '''
+        Boss fights all raids combat is turn based. To see who wins we compare how many turns the opponents take to kill each other.
+        If the raid kills the boss in 10 turns and the boss kills the raid in 15 turns then that is considered a win for the boss
+        '''
         allraid_lifespan = []
         boss_lifespan = []
         for raid in self.list_of_raids:
@@ -86,11 +90,13 @@ class SimulationPlate:
                 boss_score += 1
             else:
                 raid_score += 1
-        print("boss score: {} raid score: {}".format(boss_score, raid_score))
         return boss_score, raid_score
 
     
     def KNN_defense(self):
+        '''
+        Fit defense vector the the community of raiders
+        '''
         defense_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
         all_attack_vecs = [raid.raid_attack for raid in self.list_of_raids]
         all_attack_vecs = np.squeeze(np.stack(all_attack_vecs, axis=0))
@@ -108,6 +114,9 @@ class SimulationPlate:
         return defense_fitter.cluster_centers_[np.argmin(concentration)]
     
     def KNN_attack(self):
+        '''
+        Fit attack vector the the community of raiders
+        '''
         attack_fitter = KMeans(n_clusters=8, random_state=0, algorithm="elkan")
         all_defense_vecs = [raid.raid_defense for raid in self.list_of_raids]
         all_defense_vecs = np.squeeze(np.stack(all_defense_vecs, axis=0))
@@ -126,6 +135,10 @@ class SimulationPlate:
         return attack_fitter.cluster_centers_[np.argmin(concentration)], attack_fitter
 
     def n_sphere_sample(self, sphere_center, model):
+        '''
+        Fitted attack vectors seem to be too "meta specific" so we will use the attack vector and then radomly sample from the sphere of radius
+        to find a somewhat random attack vector.
+        '''
         radius = [np.linalg.norm(center - sphere_center) for center in model.cluster_centers_] # the second smallest radius
         radius.sort()
         radius = radius[2]

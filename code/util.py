@@ -9,5 +9,6 @@ class Counter:
         self.raid_score += tup[1]
     
     def __str__(self) -> str:
-        string = self.name + "\n\n" + "Boss Score: {}".format(self.boss_score) + "\n Raid Score: {}".format(self.raid_score)
+        string = "--------------------------\n"
+        string = string + self.name + "\n\n" + "Boss Score: {}".format(self.boss_score) + "\nRaid Score: {}".format(self.raid_score)
         return string

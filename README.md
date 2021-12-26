@@ -1,6 +1,6 @@
 # ml_mmorpg
 
-Random initialization favors boss
+## Random initialization favors boss
 
 --------------------------
 Boss has done no fitting
@@ -29,7 +29,7 @@ Raid Score: 676
 
 
 
-Random initialization favors raiders
+## Random initialization favors raiders
 
 
 --------------------------

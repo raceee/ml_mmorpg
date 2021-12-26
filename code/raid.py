@@ -87,6 +87,7 @@ class SimulationPlate:
             else:
                 raid_score += 1
         print("boss score: {} raid score: {}".format(boss_score, raid_score))
+        return boss_score, raid_score
 
     
     def KNN_defense(self):

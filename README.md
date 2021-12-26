@@ -7,16 +7,19 @@ Boss has done no fitting
 
 Boss Score: 1300
 Raid Score: 700
+
 --------------------------
 Boss has fitted its defense
 
 Boss Score: 1031
 Raid Score: 969
+
 --------------------------
 Boss has fitted its attack and defense
 
 Boss Score: 1004
 Raid Score: 996
+
 --------------------------
 Boss has fitted defense and attack using n-sphere sampling
 
@@ -34,16 +37,19 @@ Boss has done no fitting
 
 Boss Score: 855
 Raid Score: 1145
+
 --------------------------
 Boss has fitted its defense
 
 Boss Score: 1022
 Raid Score: 978
+
 --------------------------
 Boss has fitted its attack and defense
 
 Boss Score: 1008
 Raid Score: 992
+
 --------------------------
 Boss has fitted defense and attack using n-sphere sampling
 
